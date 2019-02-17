@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/jpignata/toolbox/secrets/pkg/ssm"
+	"github.com/jpignata/toolbox/pkg/ssm"
 )
 
 const (

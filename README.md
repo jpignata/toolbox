@@ -42,10 +42,10 @@ https://gist.github.com/jpignata/0123456789abdefc0123456789abcdef
 ## Dependencies
 
 Tools that require authentication use [AWS System Manager][2] [Parameter Store][3] to fetch credentials. See
-[secrets/pkg/ssm/secure_string.go][4] for details.
+[pkg/ssm/secure_string.go][4] for details.
 
 [1]: https://www.adventofcode.com
 [2]: https://aws.amazon.com/systems-manager/
 [3]: https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html
-[4]: secrets/pkg/ssm/secure_string.go
+[4]: pkg/ssm/secure_string.go
 [5]: https://gist.github.com

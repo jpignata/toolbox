@@ -4,7 +4,7 @@ install: bin/aoc bin/gist
 	cp bin/* ~/bin
 
 clean:
-	rm bin/*
+	rm -f bin/*
 
 bin/aoc:
 	go build -o bin/aoc aoc/main.go
