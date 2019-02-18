@@ -21,7 +21,7 @@ R2, L1, R2, R1, R1, L3, R3, L5, L5, L2, L1, R4, R1, R3, L5, L5, R3, L4, L4, R5, 
 
 ### gist
 
-Posts the given files and/or input from `STDIN` as a [GitHub Gist][5]. Gists are private but default, but can be made
+Posts the given files and/or input from `STDIN` as a [GitHub Gist][5]. Gists are private by default, but can be made
 public via `-p`. Returns a link to the Gist.
 
 #### Usage
