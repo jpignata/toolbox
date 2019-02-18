@@ -1,6 +1,6 @@
 .PHONY: install clean
 
-install: bin/aoc bin/gist
+install: bin/aoc bin/gist bin/pf
 	cp bin/* ~/bin
 
 clean:
@@ -11,3 +11,6 @@ bin/aoc:
 
 bin/gist:
 	go build -o bin/gist gist/main.go
+
+bin/pf:
+	go build -o bin/pf pf/main.go
