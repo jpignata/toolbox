@@ -7,12 +7,14 @@ import (
 	"net/http/httptrace"
 	"net/url"
 	"os"
+	"strings"
 	"text/tabwriter"
 	"time"
 
 	"golang.org/x/net/html"
 )
 
+// Response represents the facts to collect from a page.
 type Response struct {
 	Connect   time.Duration
 	FirstByte time.Duration
@@ -82,11 +84,17 @@ func main() {
 		w.Init(os.Stdout, 0, 0, 4, ' ', 0)
 		fmt.Fprintf(w, "response\t%d %s [connect=%s firstByte=%s total=%s]\t\n", response.StatusCode,
 			http.StatusText(response.StatusCode), response.Connect, response.FirstByte, response.Total)
-		fmt.Fprintf(w, "title\t%s\n", response.Title)
-		fmt.Fprintf(w, "h1\t%s\n", response.Header)
-		fmt.Fprintf(w, "description\t%s\t\n", response.Description)
+		fmt.Fprintf(w, "title\t%s\n", strings.TrimSpace(response.Title))
+
+		if len(response.Header) > 0 {
+			fmt.Fprintf(w, "h1\t%s\n", response.Header)
+		}
+
 		fmt.Fprintf(w, "url\t%s\n", response.URL)
-		fmt.Fprintf(w, "canonical\t%s\n", response.Canonical)
+
+		if len(response.Canonical) > 0 {
+			fmt.Fprintf(w, "canonical\t%s\n", response.Canonical)
+		}
 
 		if len(alternates) > 0 {
 			for locale, url := range alternates {
@@ -183,7 +191,9 @@ func parse(body io.ReadCloser) (title, description, header, canonical string,
 		case "canonical":
 			canonical = link.Href
 		case "alternate":
-			alternates[link.Hreflang] = link.Href
+			if len(link.Hreflang) > 0 {
+				alternates[link.Hreflang] = link.Href
+			}
 		}
 	}
 
