@@ -14,21 +14,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-// Response represents the facts to collect from a page.
-type Response struct {
-	Connect   time.Duration
-	FirstByte time.Duration
-	Total     time.Duration
-
-	Alternates  map[string]string
-	Canonical   string
-	Description string
-	Header      string
-	StatusCode  int
-	Title       string
-	URL         string
-}
-
+// Link holds the contents of a <link> tag.
 type Link struct {
 	Rel      string
 	Href     string
@@ -52,7 +38,8 @@ func main() {
 		u.Scheme = "https"
 	}
 
-	times, statusCode, body, err := get(u.String())
+	times, statusCode, body, location, err := get(u.String())
+	statusText := http.StatusText(statusCode)
 
 	if err != nil {
 		fmt.Printf("Could not fetch URL: %s", err)
@@ -66,34 +53,26 @@ func main() {
 		os.Exit(1)
 	}
 
-	response := Response{
-		Title:       title,
-		Description: description,
-		Header:      header,
-		Canonical:   canonical,
-		Alternates:  alternates,
-		StatusCode:  statusCode,
-		Connect:     times[0],
-		FirstByte:   times[1],
-		Total:       times[2],
-		URL:         u.String(),
-	}
-
-	if response.StatusCode == 200 {
+	if statusCode == 200 {
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 0, 4, ' ', 0)
-		fmt.Fprintf(w, "response\t%d %s [connect=%s firstByte=%s total=%s]\t\n", response.StatusCode,
-			http.StatusText(response.StatusCode), response.Connect, response.FirstByte, response.Total)
-		fmt.Fprintf(w, "title\t%s\n", strings.TrimSpace(response.Title))
 
-		if len(strings.TrimSpace(response.Header)) > 0 {
-			fmt.Fprintf(w, "h1\t%s\n", strings.TrimSpace(response.Header))
+		fmt.Fprintf(w, "response\t%d %s [connect=%s firstByte=%s total=%s]\t\n", statusCode, statusText, times[0],
+			times[1], times[2])
+		fmt.Fprintf(w, "title\t%s\n", strings.TrimSpace(title))
+
+		if len(strings.TrimSpace(header)) > 0 {
+			fmt.Fprintf(w, "h1\t%s\n", strings.TrimSpace(header))
 		}
 
-		fmt.Fprintf(w, "url\t%s\n", response.URL)
+		if len(strings.TrimSpace(description)) > 0 {
+			fmt.Fprintf(w, "description\t%s\t\n", strings.TrimSpace(description))
+		}
 
-		if len(response.Canonical) > 0 {
-			fmt.Fprintf(w, "canonical\t%s\n", response.Canonical)
+		fmt.Fprintf(w, "url\t%s\n", u.String())
+
+		if len(canonical) > 0 {
+			fmt.Fprintf(w, "canonical\t%s\n", canonical)
 		}
 
 		if len(alternates) > 0 {
@@ -103,10 +82,16 @@ func main() {
 		}
 
 		w.Flush()
+	} else {
+		fmt.Printf("%d %s\n", statusCode, statusText)
+
+		if len(location) > 0 {
+			fmt.Printf("Location: %s\n", location)
+		}
 	}
 }
 
-func get(u string) (times []time.Duration, statusCode int, body io.ReadCloser, err error) {
+func get(u string) (times []time.Duration, statusCode int, body io.ReadCloser, location string, err error) {
 	var connectTime, firstByteTime time.Time
 
 	start := time.Now()
@@ -129,6 +114,7 @@ func get(u string) (times []time.Duration, statusCode int, body io.ReadCloser, e
 	times = append(times, connectTime.Sub(start), firstByteTime.Sub(start), time.Since(start))
 	statusCode = resp.StatusCode
 	body = resp.Body
+	location = resp.Header.Get("location")
 
 	return
 }
