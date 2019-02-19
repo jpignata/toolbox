@@ -86,8 +86,8 @@ func main() {
 			http.StatusText(response.StatusCode), response.Connect, response.FirstByte, response.Total)
 		fmt.Fprintf(w, "title\t%s\n", strings.TrimSpace(response.Title))
 
-		if len(response.Header) > 0 {
-			fmt.Fprintf(w, "h1\t%s\n", response.Header)
+		if len(strings.TrimSpace(response.Header)) > 0 {
+			fmt.Fprintf(w, "h1\t%s\n", strings.TrimSpace(response.Header))
 		}
 
 		fmt.Fprintf(w, "url\t%s\n", response.URL)
