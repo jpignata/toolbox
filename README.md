@@ -9,7 +9,6 @@ portability.
 
 Fetches input for an [Advent of Code][1] puzzle and prints it to `STDOUT`. If year is omitted, it defaults to the
 current year.
-
 #### Usage
 
 `aoc day [year]`
@@ -60,6 +59,19 @@ alternate [en-za]    https://www.audible.com/pd/The-Three-Body-Problem-Audiobook
 alternate [en-nz]    https://www.audible.com.au/pd/The-Three-Body-Problem-Audiobook/B0157751UY
 alternate [en-au]    https://www.audible.com.au/pd/The-Three-Body-Problem-Audiobook/B0157751UY
 ...
+```
+
+### urlcheck
+
+Runs an HTTP HEAD request across URLs passed in through `STDIN`. The format of the file should be one URL per line.
+
+#### Usage
+
+```console
+$ cat urls.txt | urlcheck
+StatusCode:301 URL:http://www.arstechnica.com Location:https://www.arstechnica.com/
+StatusCode:200 URL:https://www.nytimes.com
+StatusCode:200 URL:https://www.audible.com
 ```
 
 ## Dependencies

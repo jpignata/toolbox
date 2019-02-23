@@ -14,3 +14,6 @@ bin/gist:
 
 bin/pf:
 	go build -o bin/pf pf/main.go
+
+bin/urlcheck:
+	go build -o bin/urlcheck urlcheck/main.go
