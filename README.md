@@ -72,6 +72,9 @@ $ cat urls.txt | urlcheck
 StatusCode:301 URL:http://www.arstechnica.com Location:https://www.arstechnica.com/
 StatusCode:200 URL:https://www.nytimes.com
 StatusCode:200 URL:https://www.audible.com
+
+$ echo "https://www.google.com" | urlcheck
+StatusCode:200 URL:https://www.google.com
 ```
 
 ## Dependencies

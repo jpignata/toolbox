@@ -11,46 +11,51 @@ import (
 
 type status int
 
-const (
-	Success status = iota
-	PermanentRedirect
-	TemporaryRedirect
-	Error
-)
-
 type result struct {
 	Code     int
 	Location string
 	Status   status
 	URL      string
+	Error    error
 }
 
+const (
+	success status = iota
+	redirect
+	other
+)
+
+var (
+	client = &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+)
+
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
 	concurrency := flag.Int("num", 5, "Concurrency rate")
-	wg := &sync.WaitGroup{}
 	queue := make(chan string)
-	results := make(chan result)
+	scanner := bufio.NewScanner(os.Stdin)
+	wg := &sync.WaitGroup{}
 
 	flag.Parse()
 	wg.Add(*concurrency)
-
-	go func() {
-		for result := range results {
-			if result.Status == TemporaryRedirect || result.Status == PermanentRedirect {
-				fmt.Printf("StatusCode:%d URL:%s Location:%s\n", result.Code, result.URL, result.Location)
-			} else {
-				fmt.Printf("StatusCode:%d URL:%s\n", result.Code, result.URL)
-			}
-		}
-	}()
 
 	for i := 0; i < *concurrency; i++ {
 		go func() {
 			defer wg.Done()
 
 			for url := range queue {
-				request(url, results)
+				result := request(url)
+
+				if result.Status == redirect {
+					fmt.Printf("StatusCode:%d URL:%s Location:%s\n", result.Code, result.URL, result.Location)
+				} else if result.Error != nil {
+					fmt.Printf("StatusCode:0 URL:%s Error:%s\n", result.URL, result.Error)
+				} else {
+					fmt.Printf("StatusCode:%d URL:%s\n", result.Code, result.URL)
+				}
 			}
 		}()
 	}
@@ -60,48 +65,34 @@ func main() {
 	}
 
 	close(queue)
-
 	wg.Wait()
 }
 
-func request(uri string, results chan result) {
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
-
+func request(uri string) result {
 	res, err := client.Head(uri)
 
 	switch {
 	case err != nil:
-		results <- result{
-			Status: Error,
-			URL:    uri,
+		return result{
+			URL:   uri,
+			Error: err,
 		}
 	case res.StatusCode >= 200 && res.StatusCode < 300:
-		results <- result{
-			Status: Success,
+		return result{
+			Status: success,
 			Code:   res.StatusCode,
 			URL:    uri,
 		}
-	case res.StatusCode == 301:
-		results <- result{
-			Status:   PermanentRedirect,
-			Code:     res.StatusCode,
-			Location: res.Header.Get("location"),
-			URL:      uri,
-		}
-	case res.StatusCode == 302 || res.StatusCode == 303 || res.StatusCode == 307:
-		results <- result{
-			Status:   TemporaryRedirect,
+	case (res.StatusCode >= 301 && res.StatusCode <= 303) || res.StatusCode == 307:
+		return result{
+			Status:   redirect,
 			Code:     res.StatusCode,
 			Location: res.Header.Get("location"),
 			URL:      uri,
 		}
 	default:
-		results <- result{
-			Status: Error,
+		return result{
+			Status: other,
 			Code:   res.StatusCode,
 			URL:    uri,
 		}
