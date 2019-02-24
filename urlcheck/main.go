@@ -2,11 +2,14 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"net/http"
 	"os"
 	"sync"
+
+	"golang.org/x/time/rate"
 )
 
 type status int
@@ -23,6 +26,7 @@ const (
 	success status = iota
 	redirect
 	other
+	unknown
 )
 
 var (
@@ -34,24 +38,29 @@ var (
 )
 
 func main() {
-	concurrency := flag.Int("num", 5, "Concurrency rate")
+	concurrency := flag.Int("workers", 5, "Number of concurrent workers")
+	rps := flag.Int("max", 25, "Maximum requests per second")
+	flag.Parse()
+
+	limiter := rate.NewLimiter(rate.Limit(*rps), 1)
 	queue := make(chan string)
 	scanner := bufio.NewScanner(os.Stdin)
 	wg := &sync.WaitGroup{}
 
-	flag.Parse()
-	wg.Add(*concurrency)
-
 	for i := 0; i < *concurrency; i++ {
+		wg.Add(1)
+
 		go func() {
 			defer wg.Done()
 
 			for url := range queue {
+				limiter.Wait(context.Background())
+
 				result := request(url)
 
 				if result.Status == redirect {
 					fmt.Printf("StatusCode:%d URL:%s Location:%s\n", result.Code, result.URL, result.Location)
-				} else if result.Error != nil {
+				} else if result.Status == unknown {
 					fmt.Printf("StatusCode:0 URL:%s Error:%s\n", result.URL, result.Error)
 				} else {
 					fmt.Printf("StatusCode:%d URL:%s\n", result.Code, result.URL)
@@ -72,11 +81,6 @@ func request(uri string) result {
 	res, err := client.Head(uri)
 
 	switch {
-	case err != nil:
-		return result{
-			URL:   uri,
-			Error: err,
-		}
 	case res.StatusCode >= 200 && res.StatusCode < 300:
 		return result{
 			Status: success,
@@ -89,6 +93,12 @@ func request(uri string) result {
 			Code:     res.StatusCode,
 			Location: res.Header.Get("location"),
 			URL:      uri,
+		}
+	case err != nil:
+		return result{
+			Status: unknown,
+			URL:    uri,
+			Error:  err,
 		}
 	default:
 		return result{

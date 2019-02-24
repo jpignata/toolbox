@@ -1,6 +1,8 @@
 .PHONY: install clean
 
-install: bin/aoc bin/gist bin/pf
+all: bin/aoc bin/gist bin/pf bin/urlcheck
+
+install: all
 	cp bin/* ~/bin
 
 clean:

@@ -63,9 +63,12 @@ alternate [en-au]    https://www.audible.com.au/pd/The-Three-Body-Problem-Audiob
 
 ### urlcheck
 
-Runs an HTTP HEAD request across URLs passed in through `STDIN`. The format of the file should be one URL per line.
+Runs an HTTP HEAD request across URLs passed in through `STDIN`. The format of the file should be one URL per line. You
+can optionally specify a max RPS (default 25) and number of workers (default 5).
 
 #### Usage
+
+`urlcheck [-max rps] [-workers num] < file`
 
 ```console
 $ cat urls.txt | urlcheck
