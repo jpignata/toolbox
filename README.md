@@ -68,7 +68,7 @@ can optionally specify a max RPS (default 25) and number of workers (default 5).
 
 #### Usage
 
-`urlcheck [-max rps] [-workers num] < file`
+`urlcheck [-max <requests>] [-workers <number>] < file`
 
 ```console
 $ cat urls.txt | urlcheck
