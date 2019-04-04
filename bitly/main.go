@@ -7,19 +7,39 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/jpignata/toolbox/pkg/ssm"
 )
 
 const (
-	key = "bitly_token"
-	url = "https://api-ssl.bitly.com/v4/bitlinks"
+	key      = "bitly_token"
+	endpoint = "https://api-ssl.bitly.com/v4/bitlinks"
 )
 
 // Bitlink represents a shortened URL. (https://dev.bitly.com/v4_documentation.html)
 type Bitlink struct {
-	URL string `json:"long_url"`
+	URL string
+}
+
+// String returns a URL for the Bitlink, defaulting the protocol to https if not provided.
+func (b Bitlink) String() string {
+	u, err := url.Parse(b.URL)
+
+	if err != nil {
+		return b.URL
+	}
+
+	if u.Scheme == "" {
+		u.Scheme = "https"
+	}
+
+	return u.String()
+}
+
+type request struct {
+	LongURL string `json:"long_url"`
 }
 
 type response struct {
@@ -47,14 +67,14 @@ func main() {
 func create(token string, bitlink Bitlink) (string, error) {
 	var r response
 
-	body, err := json.Marshal(bitlink)
+	body, err := json.Marshal(request{bitlink.String()})
 
 	if err != nil {
 		return "", err
 	}
 
 	client := &http.Client{}
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", endpoint, bytes.NewBuffer(body))
 	req.Header.Add("Authorization", "Bearer "+token)
 
 	resp, err := client.Do(req)
@@ -73,15 +93,13 @@ func create(token string, bitlink Bitlink) (string, error) {
 	b, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return "", err
 	}
 
 	err = json.Unmarshal(b, &r)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return "", err
 	}
 
 	return r.Link, nil
