@@ -76,12 +76,12 @@ func create(token string, bitlink Bitlink) (string, error) {
 	client := &http.Client{}
 	req, _ := http.NewRequest("POST", endpoint, bytes.NewBuffer(body))
 	req.Header.Add("Authorization", "Bearer "+token)
-
 	resp, err := client.Do(req)
 
 	if err != nil {
 		return "", err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
