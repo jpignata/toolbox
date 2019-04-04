@@ -47,6 +47,11 @@ type response struct {
 }
 
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Printf("Usage: bitly [url]")
+		os.Exit(1)
+	}
+
 	token, err := ssm.GetSecureString(key)
 
 	if err != nil {
