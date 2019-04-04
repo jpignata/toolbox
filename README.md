@@ -80,6 +80,19 @@ $ echo "https://www.google.com" | urlcheck
 StatusCode:200 URL:https://www.google.com
 ```
 
+### bitly
+
+Shortens the given link and returns a [Bitlink][6].
+
+#### Usage
+
+`bitly [url]`
+
+```console
+$ bitly https://www.audible.com/pd/The-Three-Body-Problem-Audiobook/B00P027
+https://adbl.co/2WPs8b7
+```
+
 ## Dependencies
 
 Tools that require authentication use [AWS System Manager][2] [Parameter Store][3] to fetch credentials. See
@@ -90,3 +103,4 @@ Tools that require authentication use [AWS System Manager][2] [Parameter Store][
 [3]: https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html
 [4]: pkg/ssm/secure_string.go
 [5]: https://gist.github.com
+[6]: https://bit.ly

@@ -1,6 +1,6 @@
 .PHONY: install clean
 
-all: bin/aoc bin/gist bin/pf bin/urlcheck
+all: bin/aoc bin/gist bin/pf bin/urlcheck bin/bitly
 
 install: all
 	cp bin/* ~/bin
@@ -19,3 +19,6 @@ bin/pf:
 
 bin/urlcheck:
 	go build -o bin/urlcheck urlcheck/main.go
+
+bin/bitly:
+	go build -o bin/bitly bitly/main.go
