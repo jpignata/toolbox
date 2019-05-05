@@ -33,6 +33,11 @@ type File struct {
 
 type files []string
 
+// Response represents attributes passed back for the Gist API.
+type Response struct {
+	URL string `json:"html_url"`
+}
+
 // Set adds a new file to files.
 func (f *files) Set(v string) error {
 	*f = append(*f, v)
@@ -128,14 +133,14 @@ func readStdin() (string, error) {
 }
 
 func create(credentials string, gist Gist) (string, error) {
-	body, err := json.Marshal(gist)
+	reqBody, err := json.Marshal(gist)
 
 	if err != nil {
 		return "", err
 	}
 
 	client := &http.Client{}
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(reqBody))
 	parts := strings.Split(credentials, ":")
 	req.SetBasicAuth(parts[0], parts[1])
 
@@ -152,5 +157,9 @@ func create(credentials string, gist Gist) (string, error) {
 		return "", errors.New(string(errBody))
 	}
 
-	return resp.Header.Get("Location"), nil
+	var respJSON Response
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(respBody, &respJSON)
+
+	return respJSON.URL, nil
 }
