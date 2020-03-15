@@ -74,6 +74,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if len(stdin) == 0 && len(files) == 0 {
+		fmt.Printf("No STDIN or files provided.\n")
+		os.Exit(1)
+	}
+
 	if len(stdin) > 0 {
 		files[n] = File{stdin}
 	}
