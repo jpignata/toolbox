@@ -38,48 +38,6 @@ $ gist -f ./file.txt -d "Here's a file I have" -p
 https://gist.github.com/jpignata/0123456789abdefc0123456789abcdef
 ```
 
-### pf
-
-[p]age [f]acts: returns pertinent details from an HTML page such as metadata
-information, title, canonical URL, and alternate URLs.
-
-#### Usage
-
-`pf url`
-
-```console
-$ pf https://www.audible.com/pd/The-Three-Body-Problem-Audiobook/B00P0277C2
-response             200 OK [connect=213.573152ms firstByte=268.282234ms total=268.41559ms]    
-title                The Three-Body Problem (Audiobook) by Cixin Liu | Audible.com
-h1                   The Three-Body Problem
-description          Written by Cixin Liu, Audiobook narrated by Luke Daniels. Sign-in to download and listen to this audiobook today! First time visiting Audible? Get this book free when you sign up for a 30-day Trial.    
-url                  https://www.audible.com/pd/The-Three-Body-Problem-Audiobook/B00P0277C2
-canonical            https://www.audible.com/pd/The-Three-Body-Problem-Audiobook/B00P0277C2
-alternate [en-za]    https://www.audible.com/pd/The-Three-Body-Problem-Audiobook/B01577B2Z2
-alternate [en-nz]    https://www.audible.com.au/pd/The-Three-Body-Problem-Audiobook/B0157751UY
-alternate [en-au]    https://www.audible.com.au/pd/The-Three-Body-Problem-Audiobook/B0157751UY
-...
-```
-
-### urlcheck
-
-Runs an HTTP HEAD request across URLs passed in through `STDIN`. The format of the file should be one URL per line. You
-can optionally specify a max RPS (default 25) and number of workers (default 5).
-
-#### Usage
-
-`urlcheck [-max <requests>] [-workers <number>] < file`
-
-```console
-$ cat urls.txt | urlcheck
-StatusCode:301 URL:http://www.arstechnica.com Location:https://www.arstechnica.com/
-StatusCode:200 URL:https://www.nytimes.com
-StatusCode:200 URL:https://www.audible.com
-
-$ echo "https://www.google.com" | urlcheck
-StatusCode:200 URL:https://www.google.com
-```
-
 ### bitly
 
 Shortens the given link and returns a [Bitlink][6].
