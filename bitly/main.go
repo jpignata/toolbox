@@ -89,19 +89,19 @@ func create(token string, bitlink Bitlink) (string, error) {
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode > 201 {
 		errBody, _ := ioutil.ReadAll(resp.Body)
 
 		return "", errors.New(string(errBody))
 	}
 
-	b, err := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
 		return "", err
 	}
 
-	err = json.Unmarshal(b, &r)
+	err = json.Unmarshal(respBody, &r)
 
 	if err != nil {
 		return "", err
