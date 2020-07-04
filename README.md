@@ -1,14 +1,13 @@
 # Toolbox
 
-Random command line tools I use day to day. Currently porting from various shell, Python, and Ruby scripts to Go for
-portability.
+Random command line tools I use day to day. Currently porting from various shell, Python, and Ruby scripts to Go for portability.
 
 ## Tools
 
 ### aoc
 
-Fetches input for an [Advent of Code][1] puzzle and prints it to `STDOUT`. If year is omitted, it defaults to the
-current year.
+Fetches input for an [Advent of Code][1] puzzle and prints it to `STDOUT`. If year is omitted, it defaults to the current year.
+
 #### Usage
 
 `aoc day [year]`
@@ -20,8 +19,7 @@ R2, L1, R2, R1, R1, L3, R3, L5, L5, L2, L1, R4, R1, R3, L5, L5, R3, L4, L4, R5, 
 
 ### gist
 
-Posts the given files and/or input from `STDIN` as a [GitHub Gist][5]. Gists are private by default, but can be made
-public via `-p`. Returns a link to the Gist.
+Posts the given files and/or input from `STDIN` as a [GitHub Gist][5]. Gists are private by default, but can be made public via `-p`. Returns a link to the Gist.
 
 #### Usage
 
@@ -53,8 +51,7 @@ https://adbl.co/2WPs8b7
 
 ## Dependencies
 
-Tools that require authentication use [AWS System Manager][2] [Parameter Store][3] to fetch credentials. See
-[pkg/ssm/secure_string.go][4] for details.
+Tools that require authentication use [AWS System Manager][2] [Parameter Store][3] to fetch credentials. See [pkg/ssm/secure_string.go][4] for details.
 
 [1]: https://www.adventofcode.com
 [2]: https://aws.amazon.com/systems-manager/
