@@ -14,9 +14,11 @@ import (
 )
 
 const (
-	key     = "aoc_session_token"
-	baseURL = "https://adventofcode.com"
-	cookie  = "session"
+	key       = "aoc_session_token"
+	baseURL   = "https://adventofcode.com"
+	cookie    = "session"
+	christmas = 25
+	december  = 12
 )
 
 func main() {
@@ -28,7 +30,7 @@ func main() {
 	if len(os.Args) == 3 {
 		year = os.Args[1]
 		day = os.Args[2]
-	} else if now.Month() == 12 && now.Day() <= 25 {
+	} else if now.Month() == december && now.Day() <= christmas {
 		year = fmt.Sprintf("%d", now.Year())
 		day = fmt.Sprintf("%d", now.Day())
 	} else {
