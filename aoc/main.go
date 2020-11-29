@@ -21,18 +21,19 @@ const (
 
 func main() {
 	var year string
+	var day string
 
-	if len(os.Args) == 1 {
-		fmt.Println("Usage: aoc day [year]")
-		os.Exit(1)
-	}
-
-	day := os.Args[1]
+	now := time.Now()
 
 	if len(os.Args) == 3 {
-		year = os.Args[2]
+		year = os.Args[1]
+		day = os.Args[2]
+	} else if now.Month() == 12 && now.Day() <= 25 {
+		year = fmt.Sprintf("%d", now.Year())
+		day = fmt.Sprintf("%d", now.Day())
 	} else {
-		year = fmt.Sprintf("%d", time.Now().Year())
+		fmt.Println("Usage: aoc year day")
+		os.Exit(1)
 	}
 
 	uri, err := url.Parse(
